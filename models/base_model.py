@@ -1,39 +1,29 @@
 #!/usr/bin/python3
 """ this module contains class BaseModel that defines all common attributes/methods for other classes"""
 
-import datetime
+from datetime import datetime
 import uuid
 
 
 class BaseModel:
 	""" class that defines all common attributes/methods for other classes"""
 	def __init__(self, id, created_at, updated_at):
-		self.id = id
-		self.created_at = created_at
-		self.updated_at = updated_at
+		self.id = str(uuid.uuid4())
+		self.created_at = datetime.now()
+		self.updated_at = created_at
+	
+	def __str__(self):
+		""" Returns a string represantation of BaseModel"""
+		return f"[{self.class name}] ({self.id}) {self.__dict__}"
+	
+	def save(self):
+		self.updated_at = datetime.now
+	
+	def to_dict(self):
+		mydict_ = self.__dict__.copy()
+		mydict_("__class__") = self.__class__.name
+		mydict_("created_at") = mydict_("created_at").isoformat()
+		mydict_("updated_at") = mydict_("updated_at").isoformat()
+	    return mydict_
 
-	@property
-	def id(self):
-		"""Retrieves the attribute"""
-		return self.id
 	
-	@id.setter
-	def id(self, value):
-		"""Sets the attribute"""
-		if type(value) is not str:
-			raise TypeError("id should be a string")
-		id = uuid.uuid4()
-		print(id)
-		self.id = value
-	
-	@property
-	def created_at(self):
-		"""Retrieves the attribute"""
-		return self.created_at
-	
-	@created_at.setter
-	def created_at(self, value):
-		"""Sets the attribute"""
-		if type(value) is not int:
-			raise TypeError("")
-		
