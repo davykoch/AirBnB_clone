@@ -15,7 +15,7 @@ class FileStorage:
 
     def new(self, obj):
         key = f"{obj.__class__.__name__}.{obj.id}"
-        obj = FileStorage.__objects[key]
+        FileStorage.__objects[key] =  obj
 
     def save(self):
         obj_dict = {}
