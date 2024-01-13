@@ -5,7 +5,6 @@ that defines all common attributes/methods for other classes"""
 from datetime import datetime
 import uuid
 
-
 class BaseModel:
     """ class that defines all common attributes/methods for other classes"""
     def __init__(self, *args, **kwargs):
@@ -20,7 +19,8 @@ class BaseModel:
         else:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
-            models.storage.new(self)
+            from models import storage
+            storage.new(self)
 
     def __str__(self):
         """ Returns a string represantation of BaseModel"""
@@ -28,7 +28,8 @@ class BaseModel:
 
     def save(self):
         self.updated_at = datetime.now()
-        models.storage.save()
+        from models import storage
+        storage.save()
 
     def to_dict(self):
         my_dict = self.__dict__.copy()

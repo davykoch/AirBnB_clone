@@ -26,19 +26,17 @@ class FileStorage:
 
     def reload(self):
         try:
-            with open(FileStorage.__file_path, 'r') as f:
-                file_content = f.read()
-                if not file_content:
-                    return
-                    
-                obj_dict = json.loads(file_content)
-                for key, val in obj_dict.items():
-                    cls_name = val["__class__"]
-                    cls = eval()[cls_name] if cls_name in globals() else None
-                    if cls:
-                        self.__objects[key] = cls(**val)
+            with open(self.__file_path, 'r') as f:
+                objs = json.load(f)
 
+            for key, val in objs.items():
+                cls_name = val["__class__"]
+                cls = globals()[cls_name] if cls_name in globals() else None
+
+                if cls:
+                    self.__objects[key] = cls(**val)
         except FileNotFoundError:
             pass
-        except json.JSONDecodeError:
-            print("Error: contains invalid JSON.")
+        
+        #except json.JSONDecodeError:
+            #print("Error: contains invalid JSON.")
