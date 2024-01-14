@@ -69,7 +69,7 @@ class TestFileStorage(unittest.TestCase):
 
     def test_save_empty_storage(self):
         """Test save method with no objects."""
-        FileStorage._FileStorage__objects = {}  # Clear any pre-existing data
+        FileStorage._FileStorage__objects = {}
         with patch('models.engine.file_storage.open',
                    mock_open()) as mock_file:
             self.storage.save()
