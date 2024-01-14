@@ -8,6 +8,7 @@ from unittest.mock import patch, mock_open
 from models.engine.file_storage import FileStorage
 from models.base_model import BaseModel
 
+
 class TestFileStorage(unittest.TestCase):
     """Test suite for the FileStorage class."""
 
@@ -41,11 +42,14 @@ class TestFileStorage(unittest.TestCase):
         model = BaseModel()
         self.storage.new(model)
 
-        with patch('models.engine.file_storage.open', mock_open(), create=True) as mock_file:
+        with patch('models.engine.file_storage.open',
+                   mock_open(), create=True) as mock_file:
             self.storage.save()
-        
-            actual_write_calls = ''.join(args[0] for args, _ in mock_file().write.call_args_list)
-            expected_output = json.dumps({f"BaseModel.{model.id}": model.to_dict()})  # Default formatting
+
+            actual_write_calls = ''.join(args[0] for args, _ in
+                                         mock_file().write.call_args_list)
+            expected_output = json.dumps({f"BaseModel.{model.id}":
+                                         model.to_dict()})
 
             self.assertEqual(actual_write_calls, expected_output)
 
@@ -54,7 +58,6 @@ class TestFileStorage(unittest.TestCase):
         FileStorage._FileStorage__objects = {}
         self.storage.reload()
         self.assertEqual(len(self.storage.all()), 0)
-
 
     def test_reload_with_file(self):
         """Test reload method when file exists."""
@@ -67,7 +70,8 @@ class TestFileStorage(unittest.TestCase):
     def test_save_empty_storage(self):
         """Test save method with no objects."""
         FileStorage._FileStorage__objects = {}  # Clear any pre-existing data
-        with patch('models.engine.file_storage.open', mock_open()) as mock_file:
+        with patch('models.engine.file_storage.open',
+                   mock_open()) as mock_file:
             self.storage.save()
 
             mock_file.assert_called_with('file.json', 'w')
