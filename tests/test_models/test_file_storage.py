@@ -3,7 +3,7 @@
 
 import unittest
 from unittest.mock import patch, mock_open
-from engine import FileStorage
+from models.file_storage import FileStorage
 from models.base_model import BaseModel
 import json
 import os
@@ -34,18 +34,23 @@ class TestFileStorage(unittest.TestCase):
         """ Test save method """
         self.storage.new(self.obj)
         self.storage.save()
-        mock_file.assert_called_once_with(FileStorage._FileStorage__file_path, 'w')
+        mock_file.assert_called_once_with
+        (FileStorage._FileStorage__file_path, 'w')
         handle = mock_file()
-        handle.write.assert_called_once_with(json.dumps({self.key: self.obj.to_dict()}))
+        handle.write.assert_called_once_with
+        (json.dumps({self.key: self.obj.to_dict()}))
 
     @patch('models.file_storage.open', new_callable=mock_open,
-    read_data='{"BaseModel.1234": {"__class__": "BaseModel", "id": "1234"}}')
+           read_data='{"BaseModel.1234": {"__class__": "BaseModel",
+                       "id": "1234"}}')
     def test_reload(self, mock_file):
         """ Test reload method """
         self.storage.reload()
-        mock_file.assert_called_once_with(FileStorage._FileStorage__file_path, 'r')
+        mock_file.assert_called_once_with
+        (FileStorage._FileStorage__file_path, 'r')
         self.assertIn('BaseModel.1234', FileStorage._FileStorage__objects)
-        self.assertIsInstance(FileStorage._FileStorage__objects['BaseModel.1234'], BaseModel)
+        self.assertIsInstance(FileStorage._FileStorage__objects
+                              ['BaseModel.1234'], BaseModel)
 
     def tearDown(self):
         """ Clean up tasks """
