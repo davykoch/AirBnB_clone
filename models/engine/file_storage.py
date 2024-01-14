@@ -37,6 +37,3 @@ class FileStorage:
                     self.__objects[key] = cls(**val)
         except FileNotFoundError:
             pass
-        
-        #except json.JSONDecodeError:
-            #print("Error: contains invalid JSON.")
