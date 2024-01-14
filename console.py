@@ -5,6 +5,7 @@ import cmd
 from models import storage
 from models.base_model import BaseModel
 
+
 class HBNBCommand(cmd.Cmd):
     """class of the command line interpreter"""
     prompt = '(hbnb)'
@@ -67,7 +68,8 @@ class HBNBCommand(cmd.Cmd):
             except NameError:
                 print("** class doesn't exist **")
                 return
-        print([str(obj) for obj in storage.all().values() if not arg or type(obj).__name__ == arg])
+        print([str(obj) for obj in storage.all().values()
+              if not arg or type(obj).__name__ == arg])
 
     def do_update(self, arg):
         """Updates an instance based on the class name
