@@ -4,11 +4,19 @@
 import cmd
 from models import storage
 from models.base_model import BaseModel
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
     """class of the command line interpreter"""
     prompt = '(hbnb)'
+    class_names = ['BaseModel', 'User', 'Place',
+                   'State', 'City', 'Amenity', 'Review']
 
     def do_create(self, arg):
         """Creates a new instance of BaseModel or User,
@@ -17,7 +25,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if arg not in ['BaseModel', 'User']:
+        if arg not in self.class_names:
             print("** class doesn't exist **")
             return
 
@@ -37,7 +45,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if args[0] not in ['BaseModel', 'User']:
+        if args[0] not in self.class_names:
             print("** class doesn't exist **")
             return
 
@@ -59,7 +67,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if args[0] not in ['BaseModel', 'User']:
+        if args[0] not in self.class_names:
             print("** class doesn't exist ")
             return
 
@@ -76,8 +84,7 @@ class HBNBCommand(cmd.Cmd):
     def do_all(self, arg):
         """Prints all string representation of all
         instances based or not on the class name"""
-        class_names = ['BaseModel', 'User']
-        if arg and arg not in class_names:
+        if arg and arg not in self.class_names:
             print("**class doesn't exist **")
             return
 
@@ -89,7 +96,7 @@ class HBNBCommand(cmd.Cmd):
         and id by adding or updating attribute"""
         args = arg.split(" ")
 
-        if len(args) < 1 or args[0] not in ['BaseModel', 'User']:
+        if len(args) < 1 or args[0] not in self.class_names:
             print("** class name missing **" if len(args)
                   < 1 else "** class doesn't exist **")
             return
