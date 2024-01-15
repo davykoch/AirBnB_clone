@@ -25,6 +25,7 @@ class FileStorage:
             json.dump(obj_dict, f)
 
     def reload(self):
+        from models.user import User
         try:
             with open(self.__file_path, 'r') as f:
                 objs = json.load(f)

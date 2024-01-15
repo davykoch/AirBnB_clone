@@ -11,10 +11,14 @@ class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb)'
 
     def do_create(self, arg):
-        """Creates a new instance of BaseModel,
+        """Creates a new instance of BaseModel or User,
         saves it (to the JSON file) and prints the id"""
         if not arg:
             print("** class name missing **")
+            return
+
+        if arg not in ['BaseModel', 'User']:
+            print("** class doesn't exist **")
             return
 
         try:
@@ -32,12 +36,17 @@ class HBNBCommand(cmd.Cmd):
         if len(args) == 0:
             print("** class name missing **")
             return
+
+        if args[0] not in ['BaseModel', 'User']:
+            print("** class doesn't exist **")
+            return
+
         if len(args) == 1:
             print("** instance id missing **")
             return
         key = f"{args[0]}.{args[1]}"
         if key not in storage.all():
-            print("** class doesn't exist **")
+            print("** no instance found **")
             return
         print(storage.all()[key])
 
@@ -49,12 +58,17 @@ class HBNBCommand(cmd.Cmd):
         if len(args) == 0:
             print("** class name missing **")
             return
+
+        if args[0] not in ['BaseModel', 'User']:
+            print("** class doesn't exist ")
+            return
+
         if len(args) == 1:
             print("** instance id missing **")
             return
         key = f"{args[0]}.{args[1]}"
         if key not in storage.all():
-            print("** class doesn't exist **")
+            print("** no instance found **")
             return
         del storage.all()[key]
         storage.save()
@@ -62,26 +76,26 @@ class HBNBCommand(cmd.Cmd):
     def do_all(self, arg):
         """Prints all string representation of all
         instances based or not on the class name"""
-        if arg:
-            try:
-                eval(arg)
-            except NameError:
-                print("** class doesn't exist **")
-                return
+        class_names = ['BaseModel', 'User']
+        if arg and arg not in class_names:
+            print("**class doesn't exist **")
+            return
+
         print([str(obj) for obj in storage.all().values()
-              if not arg or type(obj).__name__ == arg])
+              if not arg or type(obj).name == arg])
 
     def do_update(self, arg):
         """Updates an instance based on the class name
         and id by adding or updating attribute"""
         args = arg.split(" ")
 
-        if len(args) < 1:
-            print("** class name missing **")
+        if len(args) < 1 or args[0] not in ['BaseModel', 'User']:
+            print("** class name missing **" if len(args)
+                  < 1 else "** class doesn't exist **")
             return
 
         if len(args) < 2:
-            print("** class name missing **")
+            print("** instance id missing **")
             return
 
         if len(args) < 3:
