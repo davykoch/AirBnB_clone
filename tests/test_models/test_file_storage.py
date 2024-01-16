@@ -92,3 +92,7 @@ class TestFileStorage(unittest.TestCase):
         self.storage.reload()
         all_objects = self.storage.all()
         self.assertIn(f"BaseModel.{self.model.id}", all_objects)
+
+
+if __name__ == '__main__':
+    unittest.main()
