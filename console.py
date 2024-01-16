@@ -126,12 +126,15 @@ class HBNBCommand(cmd.Cmd):
         """Handle commands which do not have a dedicated method"""
         parts = line.split('.')
         if len(parts) == 2:
-            class_name, command = parts
+            class_name, command = parts[0]. parts[1]
             if class_name in self.class_names:
-                if command == "all()":
+                if command.startswith("all()"):
                     self.do_all(class_name)
-                elif command == "count()":
+                elif command.startswith("count()"):
                     self.count_instances(class_name)
+                elif command.startswith("show(") and command.endswith(")"):
+                    obj_id = command[5:-1]
+                    self.do_show(f"{class_name} {obj_id}")
                 else:
                     print("*** Unknown syntax:", line)
             else:
