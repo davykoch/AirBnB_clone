@@ -4,6 +4,7 @@
 import unittest
 import os
 import json
+from datetime import datetime, timedelta
 from models.engine.file_storage import FileStorage
 from models.base_model import BaseModel
 
@@ -27,11 +28,11 @@ class TestFileStorage(unittest.TestCase):
         self.assertIsInstance(self.storage._FileStorage__file_path, str)
 
     def test_objects_initialization(self):
-        """Test if __objects is initialized as a dictionary and initially empty."""
+        """Test if __objects is initialized as
+        a dictionary and initially empty."""
         self.storage._FileStorage__objects.clear()
         self.assertIsInstance(self.storage._FileStorage__objects, dict)
         self.assertEqual(len(self.storage._FileStorage__objects), 0)
-
 
     def test_all_method(self):
         """Test the all method returns the __objects dictionary."""
