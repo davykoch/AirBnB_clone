@@ -2,6 +2,7 @@
 """Module contains entry point for command line interpreter"""
 
 import cmd
+import models
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
@@ -81,14 +82,17 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
 
     def do_all(self, arg):
-        """Prints all string representation of all
-        instances based or not on the class name"""
-        if arg and arg not in self.class_names:
-            print("**class doesn't exist **")
+        """Prints all string representations of all instances."""
+        args = arg.split()
+        all_objects = models.storage.all()
+        objects_list = []
+        if args and args[0] not in self.valid_classes:
+            print("** class doesn't exist **")
             return
-
-        print([str(obj) for obj in storage.all().values()
-              if not arg or type(obj).__name__ == arg])
+        for key, obj in all_objects.items():
+            if not args or obj.__class__.__name__ == args[0]:
+                objects_list.append(str(obj))
+        print(objects_list)
 
     def do_update(self, arg):
         """Updates an instance based on the class name
@@ -157,6 +161,15 @@ class HBNBCommand(cmd.Cmd):
     def emptyline(self):
         """Do nothing upon receiving an empty line"""
         pass
+
+    def precmd(self, line):
+        """Pre-command to handle custom syntax."""
+        if line.startswith("User.show("):
+            line = line.replace("User.show(", "show User ")
+            line = line.rstrip(")")
+        return line
+
+    valid_classes = ["BaseModel", "User"]
 
 
 if __name__ == '__main__':
