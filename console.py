@@ -125,10 +125,15 @@ class HBNBCommand(cmd.Cmd):
     def default(self, line):
         """Handle commands which do not have a dedicated method"""
         parts = line.split('.')
-        if len(parts) == 2 and parts[1] == "all()":
-            class_name = parts[0]
+        if len(parts) == 2:
+            class_name, command = parts
             if class_name in self.class_names:
-                self.do_all(class_name)
+                if command == "all()":
+                    self.do_all(class_name)
+                elif command == "count()":
+                    self.count_instances(class_name)
+                else:
+                    print("*** Unknown syntax:", line)
             else:
                 print("** class doesn't exist **")
         else:
