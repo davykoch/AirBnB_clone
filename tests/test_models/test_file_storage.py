@@ -48,6 +48,100 @@ class TestFileStorage(unittest.TestCase):
         key = f"{type(test_obj).__name__}.{test_obj.id}"
         self.assertIn(key, self.storage.all())
 
+    def test_save_correct_content(self):
+        """Test if the content of the save file is correct."""
+        test_obj = BaseModel()
+        self.storage.new(test_obj)
+        self.storage.save()
+        key = f"{type(test_obj).__name__}.{test_obj.id}"
+        with open(self.file_path, 'r') as f:
+            content = json.load(f)
+        self.assertIn(key, content)
+
+    def test_reload_nonexistent_file(self):
+        """Test reloading when file doesn't exist."""
+        if os.path.exists(self.file_path):
+            os.remove(self.file_path)
+        try:
+            self.storage.reload()
+            self.assertTrue(True)
+        except Exception:
+            self.fail("reload() raised an exception on nonexistent file")
+
+    def test_reload_invalid_json(self):
+        """Test reloading with invalid JSON."""
+        with open(self.file_path, 'w') as f:
+            f.write('{"invalid": "json"}')
+        with self.assertRaises(Exception):
+            self.storage.reload()
+
+    def test_multiple_objects(self):
+        """Test saving and reloading multiple objects."""
+        obj1 = BaseModel()
+        obj2 = BaseModel()
+        self.storage.new(obj1)
+        self.storage.new(obj2)
+        self.storage.save()
+        self.storage.reload()
+        key1 = f"BaseModel.{obj1.id}"
+        key2 = f"BaseModel.{obj2.id}"
+        self.assertIn(key1, self.storage.all())
+        self.assertIn(key2, self.storage.all())
+
+    def test_overwrite_on_save(self):
+        """Test if save overwrites existing file."""
+        obj = BaseModel()
+        self.storage.new(obj)
+        self.storage.save()
+
+        obj2 = BaseModel()
+        self.storage.new(obj2)
+        self.storage.save()
+
+        with open(self.file_path, 'r') as f:
+            content = json.load(f)
+        self.assertIn(f"BaseModel.{obj2.id}", content)
+
+    def test_data_persistence(self):
+        """Test data persistence between FileStorage instances."""
+        obj = BaseModel()
+        self.storage.new(obj)
+        self.storage.save()
+
+        new_storage = FileStorage()
+        new_storage.reload()
+        self.assertIn(f"BaseModel.{obj.id}", new_storage.all())
+
+    def test_reload_empty_file(self):
+        """Test reload with an empty file."""
+        with open(self.file_path, 'w') as f:
+            pass
+
+        with self.assertRaises(json.decoder.JSONDecodeError):
+            self.storage.reload()
+
+    def test_integrity_of_reloaded_objects(self):
+        """Test the integrity of objects reloaded from file."""
+        obj = BaseModel()
+        obj.name = "Test Name"
+        self.storage.new(obj)
+        self.storage.save()
+
+        self.storage.reload()
+        reloaded_obj = self.storage.all()[f"BaseModel.{obj.id}"]
+        self.assertEqual(reloaded_obj.name, "Test Name")
+
+    def test_exception_handling_save_reload(self):
+        """Test exception handling on save and reload."""
+        if os.path.exists(self.file_path):
+            os.remove(self.file_path)
+
+        try:
+            self.storage.reload()
+            self.assertTrue(True)
+        except Exception:
+            self.fail("reload() should not raise an exception")
+
 
 if __name__ == '__main__':
     unittest.main()
