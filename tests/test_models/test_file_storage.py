@@ -21,32 +21,49 @@ class TestFileStorage(unittest.TestCase):
         if os.path.exists(self.file_path):
             os.remove(self.file_path)
 
-    def test_all_returns_dict(self):
-        """Test if all returns a dictionary."""
-        self.assertIsInstance(self.storage.all(), dict)
+    def test_file_path_exists(self):
+        """Test if __file_path is defined."""
+        self.assertTrue(hasattr(self.storage, '_FileStorage__file_path'))
+        self.assertIsInstance(self.storage._FileStorage__file_path, str)
 
-    def test_new(self):
-        """Test if new properly adds objects."""
+    def test_objects_initialization(self):
+        """Test if __objects is initialized as a dictionary and initially empty."""
+        self.storage._FileStorage__objects.clear()
+        self.assertIsInstance(self.storage._FileStorage__objects, dict)
+        self.assertEqual(len(self.storage._FileStorage__objects), 0)
+
+
+    def test_all_method(self):
+        """Test the all method returns the __objects dictionary."""
+        self.assertEqual(self.storage.all(),
+                         self.storage._FileStorage__objects)
+
+    def test_new_method(self):
+        """Test new method adds an object to __objects."""
         test_obj = BaseModel()
         self.storage.new(test_obj)
         key = f"{type(test_obj).__name__}.{test_obj.id}"
-        self.assertIn(key, self.storage.all())
+        self.assertIn(key, self.storage._FileStorage__objects)
 
     def test_save(self):
         """Test if save properly saves objects to file."""
         test_obj = BaseModel()
         self.storage.new(test_obj)
         self.storage.save()
-        self.assertTrue(os.path.exists(self.file_path))
+        self.assertTrue(os.path.isfile(self.file_path))
 
-    def test_reload(self):
-        """Test if reload properly loads objects from file."""
+    def test_reload_method(self):
+        """Test reload method correctly loads objects."""
         test_obj = BaseModel()
+        test_obj.name = "Test"
         self.storage.new(test_obj)
         self.storage.save()
-        self.storage.reload()
-        key = f"{type(test_obj).__name__}.{test_obj.id}"
-        self.assertIn(key, self.storage.all())
+
+        new_storage = FileStorage()
+        new_storage.reload()
+        key = f"BaseModel.{test_obj.id}"
+        self.assertIn(key, new_storage.all())
+        self.assertEqual(new_storage.all()[key].name, "Test")
 
     def test_save_correct_content(self):
         """Test if the content of the save file is correct."""
