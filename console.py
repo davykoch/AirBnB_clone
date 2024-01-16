@@ -125,7 +125,7 @@ class HBNBCommand(cmd.Cmd):
     def default(self, line):
         """Handle commands which do not have a dedicated method"""
         parts = line.split('.')
-        if len(parts) == 2 and parts[1] == "all()":
+        if len(parts) == 2 and parts[1] == "count()":
             class_name = parts[0]
             if class_name in self.class_names:
                 self.do_all(class_name)
@@ -133,6 +133,14 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
         else:
             print("*** Unknown syntax:", line)
+
+    def count_instances(self, class_name):
+        """Count the number of instances of a given class"""
+        count = 0
+        for key in storage.all():
+            if key.startswith(class_name + '.'):
+                count += 1
+        print(count)
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
