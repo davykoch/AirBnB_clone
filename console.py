@@ -142,6 +142,8 @@ class HBNBCommand(cmd.Cmd):
                     elif action == "destroy":
                         self.do_destroy(f"{class_name} {args_str}")
                     elif action == "update":
+                        update_args = ' '.join(arg.strip('"') for
+                                               arg in args_str.split(', '))
                         self.do_update(f"{class_name} {args_str}")
                     else:
                         print("*** Unknown syntax:", line)
