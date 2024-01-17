@@ -130,17 +130,19 @@ class HBNBCommand(cmd.Cmd):
             if class_name in self.class_names:
                 command_parts = command.split('(')
                 if len(command_parts) == 2 and command_parts[1].endswith(")"):
-                    action, arg = command_parts
-                    arg = arg[:-1]
+                    action, args_str = command_parts
+                    args_str = args_str[:-1]
 
                     if action == "all":
                         self.do_all(class_name)
                     elif action == "count":
                         self.count_instances(class_name)
                     elif action == "show":
-                        self.do_show(f"{class_name} {arg}")
+                        self.do_show(f"{class_name} {args_str}")
                     elif action == "destroy":
-                        self.do_destroy(f"{class_name} {arg}")
+                        self.do_destroy(f"{class_name} {args_str}")
+                    elif action == "update":
+                        self.do_update(f"{class_name} {args_str}")
                     else:
                         print("*** Unknown syntax:", line)
                 else:
