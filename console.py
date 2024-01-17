@@ -2,7 +2,6 @@
 """Module contains entry point for command line interpreter"""
 
 import cmd
-import models
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
@@ -38,25 +37,26 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
     def do_show(self, arg):
-        """Prints the string representation of an instance."""
+        """Prints the string representation of an
+        instance based on the class name and id"""
         args = arg.split()
-        if not args:
+
+        if len(args) == 0:
             print("** class name missing **")
             return
-        class_name = args[0]
-        if class_name not in self.valid_classes:
+
+        if args[0] not in self.class_names:
             print("** class doesn't exist **")
             return
-        if len(args) < 2:
+
+        if len(args) == 1:
             print("** instance id missing **")
             return
-        instance_id = args[1]
-        key = "{}.{}".format(class_name, instance_id)
-        all_objects = models.storage.all()
-        if key in all_objects:
-            print(all_objects[key])
-        else:
+        key = f"{args[0]}.{args[1]}"
+        if key not in storage.all():
             print("** no instance found **")
+            return
+        print(storage.all()[key])
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name
@@ -82,17 +82,14 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
 
     def do_all(self, arg):
-        """Prints all string representations of all instances."""
-        args = arg.split()
-        all_objects = models.storage.all()
-        objects_list = []
-        if args and args[0] not in self.valid_classes:
-            print("** class doesn't exist **")
+        """Prints all string representation of all
+        instances based or not on the class name"""
+        if arg and arg not in self.class_names:
+            print("**class doesn't exist **")
             return
-        for key, obj in all_objects.items():
-            if not args or obj.__class__.__name__ == args[0]:
-                objects_list.append(str(obj))
-        print(objects_list)
+
+        print([str(obj) for obj in storage.all().values()
+              if not arg or type(obj).__name__ == arg])
 
     def do_update(self, arg):
         """Updates an instance based on the class name
@@ -128,27 +125,14 @@ class HBNBCommand(cmd.Cmd):
     def default(self, line):
         """Handle commands which do not have a dedicated method"""
         parts = line.split('.')
-        if len(parts) == 2:
-            class_name, command = parts
+        if len(parts) == 2 and parts[1] == "all()":
+            class_name = parts[0]
             if class_name in self.class_names:
-                if command == "all()":
-                    self.do_all(class_name)
-                elif command == "count()":
-                    self.count_instances(class_name)
-                else:
-                    print("*** Unknown syntax:", line)
+                self.do_all(class_name)
             else:
                 print("** class doesn't exist **")
         else:
             print("*** Unknown syntax:", line)
-
-    def count_instances(self, class_name):
-        """Count the number of instances of a given class"""
-        count = 0
-        for key in storage.all():
-            if key.startswith(class_name + '.'):
-                count += 1
-        print(count)
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -161,15 +145,6 @@ class HBNBCommand(cmd.Cmd):
     def emptyline(self):
         """Do nothing upon receiving an empty line"""
         pass
-
-    def precmd(self, line):
-        """Pre-command to handle custom syntax."""
-        if line.startswith("User.show("):
-            line = line.replace("User.show(", "show User ")
-            line = line.rstrip(")")
-        return line
-
-    valid_classes = ["BaseModel", "User"]
 
 
 if __name__ == '__main__':
