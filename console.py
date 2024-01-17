@@ -138,6 +138,8 @@ class HBNBCommand(cmd.Cmd):
                     elif action == "show":
                         obj_id = arg[:-1]
                         self.do_show(f"{class_name} {obj_id}")
+                    elif action == "destroy":
+                        self.do_destroy(f"{class_name} {arg}")
                     else:
                         print("*** Unknown syntax:", line)
                 else:
